@@ -58,7 +58,7 @@ def draw_box(img, box, text='Trump is here!'):
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (box.xmin, box.ymin)
     fontScale = 1.5
-    fontColor = (0, 10, 255)
+    fontColor = (120, 60, 255)
     lineType = 4
 
     cv2.putText(img, text,

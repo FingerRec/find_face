@@ -2,8 +2,16 @@
 
 This project use tensorflow yolo to detect face and SIFT/(dlib face feature) to match face.
 
-## Demo (Find Trump!!)
+## Demo
+### Find interesting person, such as trump
 ![demo](https://github.com/FingerRec/find_face/raw/master/output/output_1.png)
+
+### Find someone in graduated photo.
+![demo2](https://github.com/FingerRec/find_face/raw/master/output/output_2.png)
+
+### Find person who is you don't like.
+If you get much pressure from one person, you can find here and write word such as **'i don't like you'**
+![demo3](https://github.com/FingerRec/find_face/raw/master/output/output_3.png)
 
 ## Requirements
 > tensorflow-1.8.0

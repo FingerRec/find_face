@@ -24,8 +24,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  #close the warning
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--input1', help='Path to input image 1.', default='test/imgs_part_trump/trump_1.jpg')
-parser.add_argument('--input2', help='Path to input image 2.', default='test/imgs_part_trump/G20_1.jpg')
+parser.add_argument('--input1', help='Path to input image 1.', default='test/obama/obama_1.jpg')
+parser.add_argument('--input2', help='Path to input image 2.', default='test/obama/obama_graduate_1.jpeg')
 args = parser.parse_args()
 
 # ====================================================================================================================================
@@ -65,15 +65,19 @@ def find_trump(trump_face_path, multi_person_path):
         cv2.imwrite('output/cropped_faces/2.png',single_face)
         single_face = face_recognition.load_image_file('output/cropped_faces/2.png')
         #single_face = face_recognition.api.load_image_file(single_face)
-        single_face_encoding = face_recognition.face_encodings(single_face)[0]
-        match_distance = face_recognition.face_distance([trump_face_encoding], single_face_encoding)
-        print("match_distance is: ", match_distance)
-        if match_distance < best_distance:
-            best_distance = match_distance
-            best_box = box
-            nearset_face = single_face
+        try:
+            single_face_encoding = face_recognition.face_encodings(single_face)[0]
+        except IndexError:
+            continue
+        else:
+            match_distance = face_recognition.face_distance([trump_face_encoding], single_face_encoding)
+            print("match_distance is: ", match_distance)
+            if match_distance < best_distance:
+                best_distance = match_distance
+                best_box = box
+                nearset_face = single_face
     print("best_box face: ", best_box.xmin, best_box.ymin, best_box.xmax, best_box.ymax)
-    detect_img = draw_box(mutil_person_img.copy(), best_box)
+    detect_img = draw_box(mutil_person_img.copy(), best_box, text='Obama is here!')
     return detect_img, nearset_face, mp_detected_img
 
 def main():
@@ -90,7 +94,7 @@ def main():
     plt.title('mask img(nearest face)')
     plt.imshow(nearset_face[:,:,(2,1,0)])
     plt.subplot(224)
-    plt.title('Trump is here!')
+    plt.title('The person is here!')
     plt.imshow(box_img[:,:,(2,1,0)])
     plt.show()
     '''
