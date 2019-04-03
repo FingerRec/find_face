@@ -40,13 +40,13 @@ def find_trump(trump_face_path, multi_person_path):
     :return:
     """
     faceDetector = FaceDetection()
-    siftFeatureExtract = SiftFeatureExtract()
+    siftFeatureExtract = SiftFeatureExtract(feature='SIFT', match_method_name = 'bf')
     _, boxes = faceDetector.face_detection_api(trump_face_path)
     for box in boxes:
         print("trump face: ",box.xmin, box.ymin, box.xmax, box.ymax)
-    trump_face = img_crop(cv2.imread(trump_face_path), box)
+    trump_face = img_crop(cv2.imread(trump_face_path), box, scale=50)
     trump_face = img_normalize(trump_face)
-    trump_face = img_resize(trump_face, (360, 240))
+    trump_face = img_resize(trump_face, (153, 200))
     key_point_1, trump_sift = siftFeatureExtract.calculate_sift_feature(trump_face)
     _, boxes = faceDetector.face_detection_api(multi_person_path)
     mutil_person_img = cv2.imread(multi_person_path)
@@ -61,11 +61,11 @@ def find_trump(trump_face_path, multi_person_path):
         elif box.xmax < 0 or box.xmin < 0 or box.ymax < 0 or box.ymin < 0:
             continue
         print("x:{}-{}, y:{}-{}".format(box.xmin, box.xmax, box.ymin, box.ymax))
-        single_face = img_crop(mutil_person_img, box)
+        single_face = img_crop(mutil_person_img, box, scale=50)
         single_face = img_normalize(single_face)
-        single_face = img_resize(single_face, (360, 240))
+        single_face = img_resize(single_face, (153, 200))
         key_point_2, single_face_sift = siftFeatureExtract.calculate_sift_feature(single_face)
-        match_score, good = siftFeatureExtract.calculate_similarity(trump_sift, single_face_sift)
+        match_score, good = siftFeatureExtract.calculate_similarity(trump_sift, single_face_sift, key_point_1, key_point_2)
         print("match_scroe is: ", match_score)
         if match_score > best_score:
             best_score = match_score

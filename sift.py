@@ -17,20 +17,25 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  #close the warning
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn.decomposition import PCA
 
 class SiftFeatureExtract(object):
-    def __init__(self):
+    def __init__(self, feature='SIFT', match_method_name = 'bf'):
         # FLANN parameters
         FLANN_INDEX_KDTREE = 1
         #self.feature = 'SIFT'
-        self.feature = 'SURF'
-        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=100)
-        search_params = dict(checks=50)  # or pass empty dictionary
-        #self.match_method = cv2.FlannBasedMatcher(index_params, search_params)
-        self.match_method = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
-        self.match_method_name = 'flann'
-        #self.match_method = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-        #self.match_method_name = 'bf'
+        #self.feature = 'SURF'
+        #self.feature = 'PCA_SIFT
+        self.feature = feature
+        #self.match_method_name = 'flann'
+        self.match_method_name = match_method_name
+        if match_method_name == 'bf':
+            self.match_method = cv2.BFMatcher()
+        if match_method_name == 'flann':
+            index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=100)
+            search_params = dict(checks=50)  # or pass empty dictionary
+            self.match_method = cv2.FlannBasedMatcher(index_params, search_params)
+            self.match_method = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
         self.draw_params = None
 
     def calculate_sift_feature(self, img):
@@ -39,12 +44,17 @@ class SiftFeatureExtract(object):
             feature = cv2.xfeatures2d.SIFT_create()
         elif self.feature == 'SURF':
             feature = cv2.xfeatures2d.SURF_create(400)
+        elif self.feature == 'PCA_SIFT':
+            feature = cv2.xfeatures2d.SIFT_create()
         else:
             raise TypeError('not support type now!')
         kp, des = feature.detectAndCompute(gray, None)
+        if self.feature == 'PCA_SIFT':
+            pca = PCA(n_components=32)
+            des = pca.fit_transform(des)
         return kp, des
 
-    def calculate_similarity(self, sift1, sift2):
+    def calculate_similarity(self, sift1, sift2, kp1, kp2):
         if self.match_method_name == 'bf':
             matches = self.match_method.knnMatch(sift1, sift2, k=2)
             good = []
@@ -58,16 +68,29 @@ class SiftFeatureExtract(object):
             # Need to draw only good matches, so create a mask
             matchesMask = [[0, 0] for i in range(len(matches))]
             # ratio test as per Lowe's paper
+            #Here kp will be a list of keypoints and des is a numpy array of shape Number_of_Keypoints×128.
             count = 0
             trainIdx = list()
             queryIdx = list()
             imgIdx = list()
+            trainIdxSet = set()
+            queryIdxSet = set()
+            #print(len(kp1))
+            #print(len(kp2))
+            if(len(kp1) > 3 * len(kp2)):
+                return 0, None
             #some problem here, most points point to one same point
             for i, (m, n) in enumerate(matches):
+                if abs(kp2[m.trainIdx-1].pt[0] - kp1[m.queryIdx-1].pt[0]) > 15:
+                    continue
+                if abs(kp2[m.trainIdx-1].pt[1] - kp1[m.queryIdx-1].pt[1]) > 15:
+                    continue
                 #print(trainIdx)
                 trainIdx.append(m.trainIdx)
                 queryIdx.append(m.queryIdx)
                 imgIdx.append(m.imgIdx)
+                #if trainIdx.count(m.trainIdx) > 5 * queryIdx.count(m.queryIdx):
+                #    continue
                 if trainIdx.count(m.trainIdx) > 6:
                     continue
                 if queryIdx.count(m.queryIdx) > 6:

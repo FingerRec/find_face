@@ -41,22 +41,23 @@ def img_mask(img, box):
     mask_array = np.zeros((h,w,c))
     mask_array[box.ymin:box.ymax, box.xmin:box.xmax, :] = 1
     return mask_array * img
-def img_crop(img, box):
+
+def img_crop(img, box, scale=10):
     """
-    crop one image's are
+    crop one image's
     :return:
     """
     h, w, c = np.shape(img)
-    box.ymin = max(0, box.ymin - h/10)
-    box.ymax = min(h, box.ymax + h/10)
-    box.xmin = max(0, box.xmin - w/10)
-    box.xmax = min(w, box.xmax + w/10)
-    cropped_img = img[box.ymin:box.ymax, box.xmin:box.xmax, :]
+    box.ymin = max(0, box.ymin - h/scale)
+    box.ymax = min(h, box.ymax + h/scale)
+    box.xmin = max(0, box.xmin - w/scale)
+    box.xmax = min(w, box.xmax + w/scale)
+    cropped_img = img[int(box.ymin):int(box.ymax), int(box.xmin):int(box.xmax), :]
     return cropped_img
 
 def draw_box(img, box, text='Trump is here!'):
     font = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (box.xmin, box.ymin)
+    bottomLeftCornerOfText = (int(box.xmin), int(box.ymin))
     fontScale = 1.5
     fontColor = (120, 60, 255)
     lineType = 4
@@ -67,7 +68,7 @@ def draw_box(img, box, text='Trump is here!'):
                 fontScale,
                 fontColor,
                 lineType)
-    cv2.rectangle(img=img, pt1=(box.xmin, box.ymin), pt2=(box.xmax, box.ymax), color=(0,250,0),
+    cv2.rectangle(img=img, pt1=(int(box.xmin), int(box.ymin)), pt2=(int(box.xmax), int(box.ymax)), color=(0,250,0),
                   thickness=5)
     return img
 

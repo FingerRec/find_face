@@ -5,8 +5,8 @@ import argparse
 from utils import img_normalize
 
 parser = argparse.ArgumentParser(description='Code for Feature Matching with FLANN tutorial.')
-parser.add_argument('--input1', help='Path to input image 1.', default='box.png')
-parser.add_argument('--input2', help='Path to input image 2.', default='box_in_scene.png')
+parser.add_argument('--input1', help='Path to input image 1.', default='test/imgs_part_trump/trump_1.jpg')
+parser.add_argument('--input2', help='Path to input image 2.', default='test/imgs_part_trump/trump_2.jpg')
 args = parser.parse_args()
 
 img_object = cv.imread((args.input1), cv.IMREAD_GRAYSCALE)
@@ -20,8 +20,8 @@ if img_object is None or img_scene is None:
     exit(0)
 #-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
 minHessian = 400
-detector = cv.xfeatures2d_SURF.create(hessianThreshold=minHessian)
-#detector = cv.xfeatures2d.SIFT_create()
+#detector = cv.xfeatures2d_SURF.create(hessianThreshold=minHessian)
+detector = cv.xfeatures2d.SIFT_create()
 keypoints_obj, descriptors_obj = detector.detectAndCompute(img_object, None)
 keypoints_scene, descriptors_scene = detector.detectAndCompute(img_scene, None)
 #-- Step 2: Matching descriptor vectors with a FLANN based matcher

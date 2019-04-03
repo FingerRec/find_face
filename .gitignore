@@ -11,3 +11,5 @@ __pycache__
 /pretrained_model/yolo_v3_face_detect.pb
 /test/trump/
 *.pyc
+/test/croped_faces/
+/output/cropped_faces/

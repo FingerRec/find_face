@@ -45,6 +45,17 @@ python dl_main.py --input1 [path_of_img_1] --input2 [path_of_img_2]
 
 * Tip: this code is for my cv project and still be developing.
 * Tip: I have crawling one thousand trump images from google and naver. Download them from [dropbox](https://www.dropbox.com/sh/t5u1ra4sef24kq4/AACNc1uHNFJRXlaiUMDFfBxta?dl=0) if need.
+# Compare SIFT, SURF, etc
+## all the method's tpr-ppv figure
+![demo](https://github.com/FingerRec/find_face/raw/master/output/output_4.jpg)
 
+## Compare our modifed_sift with sift
+![demo2](https://github.com/FingerRec/find_face/raw/master/output/output_5.jpg)
+
+## Run
+matlab.engine should be installed first, then
+```bash
+python analyse.py
+```
 ## Acknolgment
 The code is highly based on and pretrained model is from [YOLOv3-Based](https://github.com/Chenyang-ZHU/YOLOv3-Based-Face-Detection-Tracking).
